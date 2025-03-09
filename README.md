@@ -26,14 +26,6 @@ A Chrome extension that remembers your preferred playback speed for each YouTube
    - Set your preferred default and toggle speeds
    - Click "Save Settings"
 
-## Creating Icons
-
-Before using this extension, you'll need to create icon files in the `icons` directory:
-- icon16.png (16x16 pixels)
-- icon48.png (48x48 pixels)
-- icon128.png (128x128 pixels)
-
-You can create simple icons using any image editor or find free icons online.
 
 ## License
 
