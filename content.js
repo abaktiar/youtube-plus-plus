@@ -5,6 +5,29 @@ let toggleSpeed = 1.5;
 let currentChannelId = null;
 let isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
+// Add CSS for the speed notification
+function addStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    #speed-saver-notification {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-family: 'YouTube Noto', Roboto, Arial, sans-serif;
+      font-size: 14px;
+      z-index: 9999;
+      transition: opacity 0.3s ease-in-out;
+      opacity: 1;
+      pointer-events: none;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 // Function to extract channel ID from URL
 function getChannelId() {
   // Try to get channel ID from URL
@@ -29,11 +52,164 @@ function setVideoSpeed(speed) {
     currentSpeed = speed;
     console.log(`YouTube Speed Saver: Set speed to ${speed}x`);
 
+    // Update YouTube's UI to reflect the speed change
+    updateYouTubeSpeedUI(speed);
+
     // Save the speed for this channel
     if (currentChannelId) {
       chrome.storage.sync.set({ [currentChannelId]: speed });
     }
   }
+}
+
+// Function to update YouTube's playback speed UI
+function updateYouTubeSpeedUI(speed) {
+  // Method 1: Try to update the speed display directly
+  try {
+    // Find the speed display element if it exists
+    const speedDisplays = document.querySelectorAll('.ytp-menuitem-label');
+    speedDisplays.forEach(display => {
+      if (display.textContent.includes('Playback speed')) {
+        // Extract the current displayed speed
+        const speedText = display.textContent;
+        const newSpeedText = speedText.replace(/[\d\.]+x/, `${speed.toFixed(2)}x`);
+        
+        // Update the text if needed
+        if (speedText !== newSpeedText) {
+          // Use a MutationObserver to watch for changes
+          const observer = new MutationObserver(() => {
+            const speedLabel = display.querySelector('.ytp-menuitem-content');
+            if (speedLabel) {
+              speedLabel.textContent = `${speed.toFixed(2)}x`;
+            }
+          });
+          
+          observer.observe(display.parentElement, { childList: true, subtree: true });
+          
+          // Disconnect after a short time
+          setTimeout(() => observer.disconnect(), 1000);
+        }
+      }
+    });
+    
+    // Also try to update the speed indicator in the player settings menu
+    updateYouTubeSpeedIndicator(speed);
+  } catch (e) {
+    console.log('Error updating speed display:', e);
+  }
+  
+  // Method 2: Create a custom notification to show the current speed
+  try {
+    // Remove any existing notification
+    const existingNotification = document.getElementById('speed-saver-notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+    
+    // Create a new notification
+    const notification = document.createElement('div');
+    notification.id = 'speed-saver-notification';
+    notification.textContent = `Speed: ${speed.toFixed(2)}x`;
+    
+    // Add to the player
+    const player = document.querySelector('.html5-video-player');
+    if (player) {
+      player.appendChild(notification);
+      
+      // Fade out and remove after 2 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+  } catch (e) {
+    console.log('Error showing speed notification:', e);
+  }
+  
+  // Method 3: Dispatch a custom event that YouTube might recognize
+  try {
+    const video = document.querySelector('video');
+    if (video) {
+      // Create and dispatch a rate change event
+      const event = new CustomEvent('ratechange', { bubbles: true });
+      video.dispatchEvent(event);
+    }
+  } catch (e) {
+    console.log('Error dispatching rate change event:', e);
+  }
+}
+
+// Function to update YouTube's speed indicator in the player settings menu
+function updateYouTubeSpeedIndicator(speed) {
+  // We'll use a less intrusive approach that doesn't manipulate the UI directly
+  // Instead, we'll create a MutationObserver to watch for when the user opens the settings menu
+  
+  // First, check if we already have an observer
+  if (window.speedObserver) {
+    window.speedObserver.disconnect();
+  }
+  
+  // Create a new observer to watch for the settings menu
+  window.speedObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.addedNodes.length) {
+        // Check if the settings menu was added
+        const settingsMenu = document.querySelector('.ytp-settings-menu');
+        if (settingsMenu && settingsMenu.style.display !== 'none') {
+          // Find the playback speed item
+          const menuItems = document.querySelectorAll('.ytp-menuitem');
+          for (const item of menuItems) {
+            const label = item.querySelector('.ytp-menuitem-label');
+            if (label && label.textContent.includes('Playback speed')) {
+              // Update the content part to show the current speed
+              const content = item.querySelector('.ytp-menuitem-content');
+              if (content) {
+                content.textContent = `${speed.toFixed(2)}x`;
+              }
+              break;
+            }
+          }
+        }
+        
+        // Check if the speed panel was added
+        const speedPanel = document.querySelector('.ytp-panel-menu');
+        if (speedPanel) {
+          // Find all speed options
+          const speedOptions = document.querySelectorAll('.ytp-menuitem');
+          const speedValues = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+          
+          // Find the closest speed value
+          let closestIndex = 0;
+          let minDiff = Math.abs(speed - speedValues[0]);
+          
+          for (let i = 1; i < speedValues.length; i++) {
+            const diff = Math.abs(speed - speedValues[i]);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closestIndex = i;
+            }
+          }
+          
+          // Add a visual indicator to the closest speed option
+          for (const option of speedOptions) {
+            const label = option.querySelector('.ytp-menuitem-label');
+            if (label) {
+              const speedText = label.textContent;
+              const speedValue = parseFloat(speedText) || (speedText === 'Normal' ? 1 : 0);
+              
+              if (Math.abs(speedValue - speedValues[closestIndex]) < 0.01) {
+                // Add a visual indicator
+                option.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Start observing the document for changes
+  window.speedObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 // Function to toggle between default and fast speed
@@ -84,6 +260,9 @@ new MutationObserver(() => {
 
 // Initialize when the content script loads
 window.addEventListener('load', () => {
+  // Add styles for notifications
+  addStyles();
+
   // Wait for YouTube to fully load
   setTimeout(() => {
     initializeExtension();
