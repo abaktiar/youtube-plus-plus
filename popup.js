@@ -5,11 +5,20 @@ const defaultSpeedInput = document.getElementById('default-speed');
 const toggleSpeedInput = document.getElementById('toggle-speed');
 const toggleButton = document.getElementById('toggle-btn');
 const saveButton = document.getElementById('save-btn');
+const shortcutTextElement = document.getElementById('shortcut-text');
 
 // Global variables
 let currentTabId = null;
 let defaultSpeed = 1.0;
 let toggleSpeed = 1.5;
+let isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
+// Update shortcut text based on platform
+if (isMac) {
+  shortcutTextElement.textContent = 'Option+S';
+} else {
+  shortcutTextElement.textContent = 'Alt+S';
+}
 
 // Load saved settings
 function loadSettings() {

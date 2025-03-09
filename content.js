@@ -3,6 +3,7 @@ let currentSpeed = 1.0;
 let defaultSpeed = 1.0;
 let toggleSpeed = 1.5;
 let currentChannelId = null;
+let isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 // Function to extract channel ID from URL
 function getChannelId() {
@@ -10,7 +11,9 @@ function getChannelId() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has('v')) {
     // We're on a video page, need to extract channel from the page
-    const channelElement = document.querySelector('a.yt-simple-endpoint[href^="/channel/"], a.yt-simple-endpoint[href^="/@"]');
+    const channelElement = document.querySelector(
+      'a.yt-simple-endpoint[href^="/channel/"], a.yt-simple-endpoint[href^="/@"]'
+    );
     if (channelElement) {
       return channelElement.getAttribute('href').replace(/^\/(@|channel\/)/, '');
     }
@@ -25,7 +28,7 @@ function setVideoSpeed(speed) {
     video.playbackRate = speed;
     currentSpeed = speed;
     console.log(`YouTube Speed Saver: Set speed to ${speed}x`);
-    
+
     // Save the speed for this channel
     if (currentChannelId) {
       chrome.storage.sync.set({ [currentChannelId]: speed });
@@ -37,7 +40,7 @@ function setVideoSpeed(speed) {
 function toggleVideoSpeed() {
   const video = document.querySelector('video');
   if (video) {
-    const newSpeed = (Math.abs(video.playbackRate - defaultSpeed) < 0.1) ? toggleSpeed : defaultSpeed;
+    const newSpeed = Math.abs(video.playbackRate - defaultSpeed) < 0.1 ? toggleSpeed : defaultSpeed;
     setVideoSpeed(newSpeed);
   }
 }
@@ -46,7 +49,7 @@ function toggleVideoSpeed() {
 function initializeExtension() {
   // Get the channel ID
   currentChannelId = getChannelId();
-  
+
   if (currentChannelId) {
     // Load saved speed for this channel
     chrome.storage.sync.get(currentChannelId, (result) => {
@@ -55,10 +58,10 @@ function initializeExtension() {
       }
     });
   }
-  
+
   // Add keyboard shortcut listener
   document.addEventListener('keydown', (e) => {
-    // Toggle speed with Alt+S
+    // Toggle speed with Alt+S (Windows/Linux) or Option+S (Mac)
     if (e.altKey && e.key === 's') {
       e.preventDefault();
       toggleVideoSpeed();
@@ -71,7 +74,7 @@ let lastUrl = location.href;
 new MutationObserver(() => {
   if (location.href !== lastUrl) {
     lastUrl = location.href;
-    
+
     // Wait for the page to load
     setTimeout(() => {
       initializeExtension();
@@ -87,7 +90,7 @@ window.addEventListener('load', () => {
   }, 1500);
 });
 
-// Listen for messages from the popup
+// Listen for messages from the popup and commands from Chrome
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getSpeed') {
     const video = document.querySelector('video');
@@ -111,4 +114,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ success: true });
   }
   return true; // Keep the message channel open for async response
+});
+
+// Listen for Chrome commands
+chrome.runtime.onMessage.addListener((request) => {
+  if (request.command === 'toggle-speed') {
+    toggleVideoSpeed();
+  }
 }); 
