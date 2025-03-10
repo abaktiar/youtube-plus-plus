@@ -1,4 +1,4 @@
-# YouTube Speed Saver
+# YouTube++
 
 A Chrome extension that remembers your preferred playback speed for each YouTube channel and allows easy toggling between speeds.
 
@@ -54,4 +54,4 @@ A Chrome extension that remembers your preferred playback speed for each YouTube
 
 ## License
 
-This project is open source and available under the MIT License. 
+This project is open source and available under the MIT License.

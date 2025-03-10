@@ -1,8 +1,8 @@
-# YouTube Speed Saver - Technical Documentation
+# YouTube++ - Technical Documentation
 
 ## Overview
 
-YouTube Speed Saver is a Chrome extension that remembers and applies user-preferred playback speeds for each YouTube channel. It allows users to toggle between default and custom speeds using keyboard shortcuts and provides a user-friendly interface for managing speed settings.
+YouTube++ is a Chrome extension that remembers and applies user-preferred playback speeds for each YouTube channel. It allows users to toggle between default and custom speeds using keyboard shortcuts and provides a user-friendly interface for managing speed settings.
 
 ## Architecture
 
@@ -345,4 +345,4 @@ Potential improvements include:
 - Additional speed presets
 - Integration with YouTube playlists
 - Enhanced visual notifications
-- Statistics on time saved 
+- Statistics on time saved

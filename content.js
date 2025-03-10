@@ -80,7 +80,7 @@ function setVideoSpeed(speed) {
   if (video) {
     video.playbackRate = speed;
     currentSpeed = speed;
-    console.log(`YouTube Speed Saver: Set speed to ${speed}x`);
+    console.log(`YouTube++: Set speed to ${speed}x`);
 
     // Update YouTube's UI to reflect the speed change
     updateYouTubeSpeedUI(speed);
@@ -518,7 +518,7 @@ function checkForVideoPlayerChanges() {
 
 // Initialize when the content script loads
 window.addEventListener('load', () => {
-  console.log('YouTube Speed Saver: Page loaded');
+  console.log('YouTube++: Page loaded');
 
   // Add styles for notifications
   addStyles();

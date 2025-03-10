@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Speed Saver",
+  "name": "YouTube++",
   "version": "1.0",
   "description": "Remembers playback speed per YouTube channel and allows easy speed toggling",
   "permissions": ["storage", "tabs"],
@@ -36,4 +36,4 @@
       "description": "Toggle between default and fast playback speeds"
     }
   }
-} 
+}
