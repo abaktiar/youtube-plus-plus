@@ -1,0 +1,128 @@
+/* General Body Styles */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: #333;
+  background-color: #f4f4f4;
+  width: 320px; /* Adjusted width */
+  padding: 15px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Heading Styles */
+h1 {
+  font-size: 20px;
+  color: #cc0000; /* YouTube Red */
+  margin: 0 0 15px 0; /* Increased bottom margin */
+  display: flex;
+  align-items: center;
+  font-weight: 500; /* Slightly bolder */
+}
+
+h1 img {
+  margin-right: 8px;
+  width: 24px; /* Adjusted size */
+  height: 24px; /* Adjusted size */
+}
+
+/* Paragraph and Span Styles */
+p {
+  margin: 8px 0; /* Adjusted margin */
+  line-height: 1.4;
+}
+
+#shortcut,
+#currentChannel,
+#currentSpeed {
+  font-weight: bold;
+  color: #555; /* Slightly darker for emphasis */
+}
+
+/* Horizontal Rule */
+hr {
+  border: 0;
+  border-top: 1px solid #ddd;
+  margin: 15px 0;
+}
+
+/* Input Field Container Divs */
+div {
+  margin-bottom: 12px; /* Adjusted margin */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Labels for Inputs */
+label {
+  margin-right: 10px; /* Added for spacing */
+  flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+/* Number Input Styles */
+input[type="number"] {
+  padding: 6px 8px; /* Adjusted padding */
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Slightly more rounded */
+  width: 70px; /* Adjusted width */
+  box-sizing: border-box;
+  text-align: right;
+}
+
+input[type="number"]:focus {
+  border-color: #007bff; /* Blue focus border */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Subtle shadow */
+  outline: none;
+}
+
+/* General Button Styles */
+button {
+  border: none;
+  padding: 8px 15px; /* Adjusted padding */
+  border-radius: 4px; /* Slightly more rounded */
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition */
+}
+
+button:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle hover shadow */
+}
+
+button:active {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Inner shadow on active */
+}
+
+/* Specific Button Styles */
+#saveSettings {
+  background-color: #cc0000; /* YouTube Red */
+  color: white;
+  width: 100%; /* Make save button full width */
+  margin-bottom: 5px; /* Space below save button */
+}
+
+#saveSettings:hover {
+  background-color: #aa0000; /* Darker red on hover */
+}
+
+#toggleButton {
+  background-color: #e0e0e0; /* Light grey */
+  color: #333;
+  width: 100%;
+}
+
+#toggleButton:hover {
+  background-color: #d0d0d0; /* Darker grey on hover */
+}
+
+/* Status Message Style */
+#saveStatus {
+  font-size: 13px; /* Slightly smaller */
+  color: #555;
+  min-height: 1.2em; /* As per plan */
+  margin-top: 8px; /* Adjusted margin */
+  text-align: center; /* Center status message */
+}
